@@ -116,3 +116,53 @@ Since the database seeds itself automatically, you can use these default account
 **Reporter Account:**
 - **Email:** `reporter1@company.com`
 - **Password:** `Demo@1234`
+
+---
+
+# Screenshots
+
+## Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+---
+
+## Analytics Page
+
+![Analytics](screenshots/analytics-page.png)
+
+---
+
+## Incidents Page
+
+![Incidents](screenshots/incidents-page.png)
+
+---
+
+## Login Page
+
+![Login](screenshots/login-page.png)
+
+---
+
+## Report Page
+
+![Report](screenshots/report-page.png)
+
+---
+
+## Reporting Page
+
+![Reporting](screenshots/reporting-page.png)
+
+---
+
+## Security Analyse Page
+
+![Security Analyse](screenshots/security-analyse-page.png)
+
+---
+
+## Threat Intelligence
+
+![Threat Intelligence](screenshots/threat-intelligence.png)
