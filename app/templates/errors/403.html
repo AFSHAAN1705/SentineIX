@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="error-stage">
+  <p class="mono text-danger">403</p>
+  <h2 class="glitch">ACCESS DENIED</h2>
+  <p>SentinelX blocked this request because your role lacks clearance.</p>
+  <a class="btn btn-cyan" href="{{ current_user.dashboard_endpoint if current_user.is_authenticated else url_for('auth.login') }}">Return to Dashboard</a>
+</div>
+{% endblock %}
+

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-scan">
+  <div>
+    <p class="eyebrow">Analyst Console</p>
+    <h2>Prioritize assigned threats and drive investigations to closure.</h2>
+  </div>
+</section>
+
+{% if critical_count > 0 %}
+<div class="critical-alert mb-3">
+  <span class="ca-icon">⚠</span>
+  <div class="ca-text">
+    <strong>{{ critical_count }} Critical Incident{{ 's' if critical_count != 1 else '' }} Assigned</strong>
+    <span>These cases require immediate attention and escalation.</span>
+  </div>
+</div>
+{% endif %}
+
+<div class="stat-grid four">
+  <article class="sx-card stat-card"><span>Assigned</span><strong>{{ stats.assigned }}</strong><small>Current workload</small></article>
+  <article class="sx-card stat-card medium"><span>Investigating</span><strong>{{ stats.investigating }}</strong><small>Active response</small></article>
+  <article class="sx-card stat-card"><span>Resolved</span><strong>{{ stats.resolved }}</strong><small>Completed cases</small></article>
+  <article class="sx-card stat-card high"><span>Active Inv.</span><strong>{{ active_investigations }}</strong><small>In progress</small></article>
+</div>
+
+<div class="two-col">
+  <section class="sx-card">
+    <div class="section-head"><h3>Assigned Incidents</h3><a href="{{ url_for('analyst.my_assignments') }}">View all</a></div>
+    <table class="table table-sx">
+      <thead><tr><th>ID</th><th>Title</th><th>Severity</th><th>Status</th><th>Risk</th></tr></thead>
+      <tbody>
+      {% for incident in incidents %}
+      <tr>
+        <td class="mono"><a href="{{ url_for('analyst.incident_detail', id=incident.incident_id) }}">SX-{{ "%05d"|format(incident.incident_id) }}</a></td>
+        <td>{{ incident.title }}</td>
+        <td><span class="severity {{ incident.severity.value|lower }}">{{ incident.severity.value }}</span></td>
+        <td><span class="status-pill {{ incident.status.value|lower|replace(' ', '-') }}">{{ incident.status.value }}</span></td>
+        <td><span class="risk-badge {{ incident.risk_score.class }}">{{ incident.risk_score.level }}</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty-row">No assignments yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  <section class="sx-card">
+    <h3>Performance Summary</h3>
+    <div class="stat-grid three" style="margin-bottom:12px;">
+      <div class="stat-card" style="padding:8px;"><span>Resolved</span><strong style="font-size:1.5rem;">{{ my_resolved }}</strong></div>
+      <div class="stat-card" style="padding:8px;"><span>Avg Time</span><strong style="font-size:1.5rem;">{{ "%.1f"|format(avg_time) }}h</strong></div>
+      <div class="stat-card" style="padding:8px;"><span>Active</span><strong style="font-size:1.5rem;">{{ active_investigations }}</strong></div>
+    </div>
+    <h3>Leaderboard</h3>
+    <div class="leaderboard">
+      {% for analyst in leaderboard %}
+      <div class="leaderboard-item {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">
+        <span class="rank">{{ loop.index }}</span>
+        <span>{{ analyst.name }}</span>
+        <small class="muted" style="margin-left:auto;">{{ analyst.resolved }} resolved</small>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<div class="two-col mt-4">
+  <section class="sx-card">
+    <h3>Recent Notes</h3>
+    <div class="activity-feed">
+      {% for note in notes %}
+      <article><span class="mono">SX-{{ "%05d"|format(note.incident_id) }}</span><p>{{ note.note }}</p><small>{{ note.created_at.strftime("%Y-%m-%d %H:%M") }}</small></article>
+      {% else %}
+      <p class="muted">No analyst notes logged.</p>
+      {% endfor %}
+    </div>
+  </section>
+  <section class="sx-card">
+    <h3>Quick Actions</h3>
+    <div class="quick-actions">
+      <a class="quick-action-btn" href="{{ url_for('analyst.my_assignments') }}">
+        <span class="q-icon">◇</span>Assignments
+      </a>
+      <a class="quick-action-btn" href="{{ url_for('analyst.threat_intel') }}">
+        <span class="q-icon">⚠</span>Threat Intel
+      </a>
+      <a class="quick-action-btn" href="{{ url_for('analyst.profile') }}">
+        <span class="q-icon">◎</span>My Profile
+      </a>
+      <a class="quick-action-btn" href="{{ url_for('auth.logout') }}">
+        <span class="q-icon">⊘</span>Logout
+      </a>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="profile-header sx-card">
+  <div class="avatar lg">
+    {% if current_user.profile_picture %}
+    <img src="{{ url_for('static', filename=current_user.profile_picture) }}" alt="{{ current_user.full_name }}">
+    {% else %}
+    {{ current_user.initials }}
+    {% endif %}
+  </div>
+  <div>
+    <h2>{{ current_user.full_name }}</h2>
+    <p class="muted">{{ current_user.email }}</p>
+    <span class="role-badge">{{ current_user.role.value }}</span>
+    {% if current_user.last_login %}
+    <small class="muted" style="display:block;margin-top:4px;">Last login: {{ current_user.last_login.strftime("%Y-%m-%d %H:%M") }}</small>
+    {% endif %}
+  </div>
+</div>
+
+<div class="two-col">
+  <section class="sx-card">
+    <h3>Edit Profile</h3>
+    <form method="post" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+      <input type="hidden" name="form_type" value="profile">
+      <label>{{ form.full_name.label.text }}</label>
+      {{ form.full_name(class="form-control sx-input") }}
+      <label>{{ form.email.label.text }}</label>
+      {{ form.email(class="form-control sx-input") }}
+      <label>{{ form.profile_picture.label.text }}</label>
+      {{ form.profile_picture(class="form-control sx-input") }}
+      {{ form.submit(class="btn btn-cyan w-100 mt-4") }}
+    </form>
+    {% for error in form.full_name.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+    {% for error in form.email.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+    {% for error in form.profile_picture.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </section>
+
+  <section class="sx-card">
+    <h3>Change Password</h3>
+    <form method="post">
+      {{ password_form.hidden_tag() }}
+      <input type="hidden" name="form_type" value="password">
+      <label>{{ password_form.current_password.label.text }}</label>
+      {{ password_form.current_password(class="form-control sx-input") }}
+      <label>{{ password_form.new_password.label.text }}</label>
+      {{ password_form.new_password(class="form-control sx-input") }}
+      <label>{{ password_form.confirm_new_password.label.text }}</label>
+      {{ password_form.confirm_new_password(class="form-control sx-input") }}
+      {{ password_form.submit(class="btn btn-alert w-100 mt-4") }}
+    </form>
+    {% for error in password_form.current_password.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+    {% for error in password_form.new_password.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+    {% for error in password_form.confirm_new_password.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </section>
+</div>
+{% endblock %}

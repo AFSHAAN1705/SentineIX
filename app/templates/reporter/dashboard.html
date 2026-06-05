@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-scan">
+  <div>
+    <p class="eyebrow">Reporter Console</p>
+    <h2>Transmit cyber incidents into SentinelX triage.</h2>
+  </div>
+  <a class="btn btn-cyan" href="{{ url_for('reporter.report_incident') }}">Report New Incident</a>
+</section>
+
+{% if critical_count > 0 %}
+<div class="critical-alert mb-3">
+  <span class="ca-icon">⚠</span>
+  <div class="ca-text">
+    <strong>{{ critical_count }} Critical Incident{{ 's' if critical_count != 1 else '' }} Require{{ 's' if critical_count == 1 else '' }} Attention</strong>
+    <span>Immediate action recommended on open critical incidents.</span>
+  </div>
+</div>
+{% endif %}
+
+<div class="stat-grid three">
+  <article class="sx-card stat-card"><span>Submitted</span><strong>{{ stats.submitted }}</strong><small>Total reports</small></article>
+  <article class="sx-card stat-card medium"><span>Open</span><strong>{{ stats.open }}</strong><small>In review pipeline</small></article>
+  <article class="sx-card stat-card"><span>Closed</span><strong>{{ stats.closed }}</strong><small>Resolved or closed</small></article>
+</div>
+
+<div class="two-col">
+  <section class="sx-card">
+    <div class="section-head"><h3>Recent Incidents</h3><a href="{{ url_for('reporter.my_incidents') }}">View all</a></div>
+    <div class="table-responsive">
+      <table class="table table-sx">
+        <thead><tr><th>ID</th><th>Title</th><th>Severity</th><th>Status</th><th>Risk</th><th>Updated</th></tr></thead>
+        <tbody>
+        {% for incident in incidents %}
+        <tr>
+          <td class="mono"><a href="{{ url_for('reporter.incident_detail', id=incident.incident_id) }}">SX-{{ "%05d"|format(incident.incident_id) }}</a></td>
+          <td>{{ incident.title }}</td>
+          <td><span class="severity {{ incident.severity.value|lower }}">{{ incident.severity.value }}</span></td>
+          <td><span class="status-pill {{ incident.status.value|lower|replace(' ', '-') }}">{{ incident.status.value }}</span></td>
+          <td><span class="risk-badge {{ incident.risk_score.class }}">{{ incident.risk_score.level }}</span></td>
+          <td class="mono">{{ incident.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty-row">No incidents submitted yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section class="sx-card">
+    <h3>Quick Actions</h3>
+    <div class="quick-actions">
+      <a class="quick-action-btn" href="{{ url_for('reporter.report_incident') }}">
+        <span class="q-icon">＋</span>Report Incident
+      </a>
+      <a class="quick-action-btn" href="{{ url_for('reporter.my_incidents') }}">
+        <span class="q-icon">▦</span>View Incidents
+      </a>
+      <a class="quick-action-btn" href="{{ url_for('reporter.profile') }}">
+        <span class="q-icon">◎</span>My Profile
+      </a>
+      <a class="quick-action-btn" href="{{ url_for('auth.logout') }}">
+        <span class="q-icon">⊘</span>Logout
+      </a>
+    </div>
+  </section>
+</div>
+{% endblock %}

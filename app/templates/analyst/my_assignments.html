@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="sx-card">
+  <div class="section-head">
+    <h3>My Assignments</h3>
+    <div class="d-flex gap-2 align-items-end">
+      <form method="get">
+        <select class="form-select sx-input sort-select" name="sort" onchange="this.form.submit()">
+          <option value="created_at_desc" {% if sort == 'created_at_desc' %}selected{% endif %}>Newest First</option>
+          <option value="created_at_asc" {% if sort == 'created_at_asc' %}selected{% endif %}>Oldest First</option>
+          <option value="severity_desc" {% if sort == 'severity_desc' %}selected{% endif %}>Severity (High)</option>
+          <option value="severity_asc" {% if sort == 'severity_asc' %}selected{% endif %}>Severity (Low)</option>
+        </select>
+      </form>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sx">
+      <thead><tr><th>ID</th><th>Title</th><th>Reporter</th><th>Type</th><th>Severity</th><th>Status</th><th>Risk</th><th>Assigned</th></tr></thead>
+      <tbody>
+      {% for incident in incidents %}
+      <tr>
+        <td class="mono"><a href="{{ url_for('analyst.incident_detail', id=incident.incident_id) }}">SX-{{ "%05d"|format(incident.incident_id) }}</a></td>
+        <td>{{ incident.title }}</td>
+        <td>{{ incident.reporter.full_name }}</td>
+        <td>{{ incident.incident_type.type_name }}</td>
+        <td><span class="severity {{ incident.severity.value|lower }}">{{ incident.severity.value }}</span></td>
+        <td><span class="status-pill {{ incident.status.value|lower|replace(' ', '-') }}">{{ incident.status.value }}</span></td>
+        <td><span class="risk-badge {{ incident.risk_score.class }}">{{ incident.risk_score.level }}</span></td>
+        <td class="mono">{{ incident.assignment.assigned_at.strftime("%Y-%m-%d %H:%M") if incident.assignment else "" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="empty-row">No assignments found.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if total_pages > 1 %}
+  <div class="pagination-sx">
+    {% if page > 1 %}<a href="?page={{ page - 1 }}&sort={{ sort }}">‹ Prev</a>{% endif %}
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}<span class="active">{{ p }}</span>{% elif p <= 3 or p > total_pages - 3 or (p >= page - 1 and p <= page + 1) %}<a href="?page={{ p }}&sort={{ sort }}">{{ p }}</a>{% endif %}
+    {% endfor %}
+    {% if page < total_pages %}<a href="?page={{ page + 1 }}&sort={{ sort }}">Next ›</a>{% endif %}
+  </div>
+  {% endif %}
+  <p class="muted mt-3">{{ total }} total assignments</p>
+</section>
+{% endblock %}

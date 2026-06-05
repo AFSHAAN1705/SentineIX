@@ -1,0 +1,14 @@
+Malware Sample Analysis Report
+
+Threat Name: BlackLock Ransomware
+SHA256:
+9a8c7f2f3b5d6e4a8d2c1b7f0e3a9f7b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8
+
+MD5:
+4f5c6d7e8a9b0c1d2e3f4a5b6c7d8e9f
+
+Detection:
+Trojan.Ransom.BlackLock
+
+Risk Level:
+Critical

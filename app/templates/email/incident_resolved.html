@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="application-name" content="SentinelX">
+  <title>SentinelX | Incident Resolved</title>
+</head>
+<body style="margin:0;background:#080b12;color:#e8eaf0;font-family:Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#080b12;padding:28px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="max-width:640px;background:#0d1117;border:1px solid #1e2535;">
+          <tr>
+            <td style="padding:24px;border-bottom:1px solid #1e2535;">
+              <h1 style="margin:0;color:#00e5ff;font-family:monospace;">SentinelX</h1>
+              <p style="margin:4px 0 0;color:#5a6478;">Detect. Investigate. Neutralize.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px;">
+              <h2 style="margin-top:0;">Incident Resolved</h2>
+              <p>Incident <strong>SX-{{ "%05d"|format(incident.incident_id) }}</strong> has been resolved by {{ resolution.analyst.full_name }}.</p>
+              <p><strong>Resolution:</strong> {{ resolution.resolution_text }}</p>
+              <p><strong>Time to resolve:</strong> {{ resolution.time_to_resolve_hours }} hours</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 24px;color:#5a6478;border-top:1px solid #1e2535;">© 2025 SentinelX Security Platform</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+

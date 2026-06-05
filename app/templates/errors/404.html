@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="error-stage">
+  <p class="mono text-warning">404</p>
+  <h2 class="glitch">SIGNAL LOST</h2>
+  <p>The requested SentinelX route could not be found.</p>
+  <a class="btn btn-cyan" href="{{ current_user.dashboard_endpoint if current_user.is_authenticated else url_for('auth.login') }}">Return to Dashboard</a>
+</div>
+{% endblock %}
+

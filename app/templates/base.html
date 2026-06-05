@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en" data-theme="{{ current_user.theme_preference if current_user.is_authenticated else 'dark' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SentinelX cyber security incident reporting and management platform. Detect. Investigate. Neutralize.">
+  <meta name="application-name" content="SentinelX">
+  <title>SentinelX | {{ title or "Security Platform" }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="{{ current_user.dashboard_endpoint if current_user.is_authenticated else url_for('auth.login') }}">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 3 56 16v19c0 14-9 22-24 26C17 57 8 49 8 35V16L32 3Z"/><path d="m21 20 22 24M43 20 21 44"/></svg>
+        </span>
+        <span><strong>SentinelX</strong><small>Detect. Investigate. Neutralize.</small></span>
+      </a>
+
+      {% if current_user.is_authenticated %}
+      <nav class="nav-stack">
+        {% if current_user.role.value == "reporter" %}
+          <a class="nav-link-sx {% if request.endpoint == 'reporter.dashboard' %}active{% endif %}" href="{{ url_for('reporter.dashboard') }}"><span class="nav-ico">⌂</span>Dashboard</a>
+          <a class="nav-link-sx {% if request.endpoint == 'reporter.report_incident' %}active{% endif %}" href="{{ url_for('reporter.report_incident') }}"><span class="nav-ico">＋</span>Report Incident</a>
+          <a class="nav-link-sx {% if request.endpoint == 'reporter.my_incidents' %}active{% endif %}" href="{{ url_for('reporter.my_incidents') }}"><span class="nav-ico">▦</span>My Incidents</a>
+          <a class="nav-link-sx {% if request.endpoint == 'reporter.profile' %}active{% endif %}" href="{{ url_for('reporter.profile') }}"><span class="nav-ico">◎</span>Profile</a>
+        {% elif current_user.role.value == "analyst" %}
+          <a class="nav-link-sx {% if request.endpoint == 'analyst.dashboard' %}active{% endif %}" href="{{ url_for('analyst.dashboard') }}"><span class="nav-ico">⌂</span>Dashboard</a>
+          <a class="nav-link-sx {% if request.endpoint == 'analyst.my_assignments' %}active{% endif %}" href="{{ url_for('analyst.my_assignments') }}"><span class="nav-ico">◇</span>Assignments</a>
+          <a class="nav-link-sx {% if request.endpoint == 'analyst.threat_intel' %}active{% endif %}" href="{{ url_for('analyst.threat_intel') }}"><span class="nav-ico">⚠</span>Threat Intel</a>
+          <a class="nav-link-sx {% if request.endpoint == 'analyst.profile' %}active{% endif %}" href="{{ url_for('analyst.profile') }}"><span class="nav-ico">◎</span>Profile</a>
+        {% elif current_user.role.value == "admin" %}
+          <a class="nav-link-sx {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}"><span class="nav-ico">⌂</span>Dashboard</a>
+          <a class="nav-link-sx {% if request.endpoint == 'admin.incidents' %}active{% endif %}" href="{{ url_for('admin.incidents') }}"><span class="nav-ico">▦</span>Incidents</a>
+          <a class="nav-link-sx {% if request.endpoint == 'admin.users' %}active{% endif %}" href="{{ url_for('admin.users') }}"><span class="nav-ico">◎</span>Users</a>
+          <a class="nav-link-sx {% if request.endpoint == 'admin.threat_intel' %}active{% endif %}" href="{{ url_for('admin.threat_intel') }}"><span class="nav-ico">⚠</span>Threat Intel</a>
+          <a class="nav-link-sx {% if request.endpoint == 'admin.audit_logs' %}active{% endif %}" href="{{ url_for('admin.audit_logs') }}"><span class="nav-ico">📋</span>Audit Logs</a>
+          <a class="nav-link-sx {% if request.endpoint == 'admin.reports' %}active{% endif %}" href="{{ url_for('admin.reports') }}"><span class="nav-ico">▤</span>Reports</a>
+          <a class="nav-link-sx {% if request.endpoint == 'admin.export_center' %}active{% endif %}" href="{{ url_for('admin.export_center') }}"><span class="nav-ico">⇩</span>Export Center</a>
+          <a class="nav-link-sx {% if request.endpoint == 'admin.profile' %}active{% endif %}" href="{{ url_for('admin.profile') }}"><span class="nav-ico">◎</span>Profile</a>
+        {% endif %}
+      </nav>
+      <div class="sidebar-user">
+        <div class="avatar">
+          {% if current_user.profile_picture %}
+          <img src="{{ url_for('static', filename=current_user.profile_picture) }}" alt="{{ current_user.full_name }}">
+          {% else %}
+          {{ current_user.initials }}
+          {% endif %}
+        </div>
+        <div>
+          <strong>{{ current_user.full_name }}</strong>
+          <span class="role-badge">{{ current_user.role.value }}</span>
+        </div>
+      </div>
+      {% endif %}
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div>
+          <span class="breadcrumb-sx">SentinelX / {{ current_user.role.value if current_user.is_authenticated else "auth" }}</span>
+          <h1>{{ title or "Security Platform" }}</h1>
+        </div>
+        {% if current_user.is_authenticated %}
+        <div class="topbar-actions">
+          <button class="theme-toggle" id="themeToggle" title="Toggle theme">{{ "\u2600" if current_user.theme_preference == "dark" else "\u263E" }}</button>
+          <div style="position:relative">
+            <button class="notification-bell" id="notificationBell" title="Notifications">
+              <span>🔔</span>
+              {% if current_user.unread_notifications_count > 0 %}
+              <span class="badge" id="notifBadge">{{ current_user.unread_notifications_count }}</span>
+              {% endif %}
+            </button>
+            <div class="notification-dropdown" id="notificationDropdown">
+              <div class="header">
+                <h6>Notifications</h6>
+                <a href="#" id="markAllRead" class="btn btn-sm btn-outline-cyan">Mark All Read</a>
+              </div>
+              <div id="notificationList">
+                {% if current_user.notifications %}
+                {% for notif in current_user.notifications[:10] %}
+                <div class="notification-item {{ 'unread' if not notif.is_read else '' }}" data-id="{{ notif.notification_id }}">
+                  <h6>{{ notif.title }}</h6>
+                  <p>{{ notif.message }}</p>
+                  <small>{{ notif.created_at.strftime("%Y-%m-%d %H:%M") }}</small>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="notification-item">
+                  <p class="muted">No notifications yet.</p>
+                </div>
+                {% endif %}
+              </div>
+              <div class="header" style="border-top: 1px solid var(--border); border-bottom: none;">
+                <a href="#" class="btn btn-sm btn-ghost" id="viewAllNotifications">View All</a>
+              </div>
+            </div>
+          </div>
+          <div class="topbar-user">
+            <span class="avatar sm">
+              {% if current_user.profile_picture %}
+              <img src="{{ url_for('static', filename=current_user.profile_picture) }}" alt="{{ current_user.full_name }}">
+              {% else %}
+              {{ current_user.initials }}
+              {% endif %}
+            </span>
+            <span>{{ current_user.email }}</span>
+            <a class="btn btn-outline-cyan btn-sm" href="{{ url_for('auth.logout') }}">Logout</a>
+          </div>
+        </div>
+        {% endif %}
+      </header>
+
+      <section class="content-wrap">
+        {% block content %}{% endblock %}
+      </section>
+    </main>
+  </div>
+
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+      <div class="toast sx-toast text-bg-dark border-{{ 'danger' if category == 'danger' else 'info' }}" role="alert" data-bs-delay="4200">
+        <div class="toast-body">{{ message }}</div>
+      </div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+
+  <footer class="footer-sx">© 2025 SentinelX Security Platform</footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const markAllBtn = document.getElementById("markAllRead");
+      if (markAllBtn) {
+        markAllBtn.addEventListener("click", function(e) {
+          e.preventDefault();
+          fetch("{{ url_for('notifications.mark_all_read') }}", { method: "POST" })
+            .then(r => r.json())
+            .then(data => {
+              if (data.success) {
+                document.querySelectorAll(".notification-item.unread").forEach(el => el.classList.remove("unread"));
+                const badge = document.getElementById("notifBadge");
+                if (badge) badge.remove();
+              }
+            });
+        });
+      }
+      document.querySelectorAll(".notification-item").forEach(item => {
+        item.addEventListener("click", function() {
+          const id = this.dataset.id;
+          if (id) {
+            fetch("{{ url_for('notifications.mark_read', notification_id=0) }}".replace("0", id), { method: "POST" })
+              .then(r => r.json())
+              .then(data => {
+                if (data.success) {
+                  this.classList.remove("unread");
+                }
+              });
+          }
+        });
+      });
+    });
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

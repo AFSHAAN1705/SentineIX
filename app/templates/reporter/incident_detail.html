@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="detail-grid">
+  <section class="sx-card">
+    <div class="section-head">
+      <h3 class="mono">SX-{{ "%05d"|format(incident.incident_id) }}</h3>
+      <span class="status-pill {{ incident.status.value|lower|replace(' ', '-') }}">{{ incident.status.value }}</span>
+    </div>
+    <h2>{{ incident.title }}</h2>
+    <p class="muted">{{ incident.description }}</p>
+    <dl class="meta-grid">
+      <div><dt>Type</dt><dd>{{ incident.incident_type.type_name }}</dd></div>
+      <div><dt>Severity</dt><dd><span class="severity {{ incident.severity.value|lower }}">{{ incident.severity.value }}</span></dd></div>
+      <div><dt>Risk Score</dt><dd><span class="risk-badge {{ incident.risk_score.class }}">{{ incident.risk_score.level }} ({{ incident.risk_score.score }})</span></dd></div>
+      <div><dt>Analyst</dt><dd>{{ incident.assignment.analyst.full_name if incident.assignment else "Pending assignment" }}</dd></div>
+      <div><dt>Created</dt><dd class="mono">{{ incident.created_at.strftime("%Y-%m-%d %H:%M") }}</dd></div>
+      <div><dt>Updated</dt><dd class="mono">{{ incident.updated_at.strftime("%Y-%m-%d %H:%M") }}</dd></div>
+    </dl>
+  </section>
+  <section class="sx-card">
+    <h3>Evidence</h3>
+    <div class="evidence-list">
+      {% for file in incident.evidence %}
+      <a href="{{ url_for('static', filename=file.file_path) }}" download><span>▧</span>{{ file.file_name }}<small>{{ (file.file_size / 1024)|round(1) }} KB</small></a>
+      {% else %}
+      <p class="muted">No evidence attached.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<div class="two-col mt-4">
+  <section class="sx-card">
+    <h3>Incident Timeline</h3>
+    <div class="timeline">
+      {% set statuses = ["Open", "Assigned", "Investigating", "Under Review", "Resolved", "Closed"] %}
+      {% set current_idx = namespace(value=0) %}
+      {% for s in statuses %}
+        {% if s == incident.status.value %}{% set current_idx.value = loop.index0 %}{% endif %}
+      {% endfor %}
+      {% for s in statuses %}
+      <div class="timeline-step {% if loop.index0 <= current_idx.value %}active{% endif %} {% if loop.index0 < current_idx.value %}completed{% endif %}">
+        <div class="step-label">{{ s }}</div>
+        {% for log in incident.status_logs %}
+          {% if log.new_status.value == s %}
+          <div class="step-desc">{{ log.changer.full_name }} — {{ log.changed_at.strftime("%Y-%m-%d %H:%M") }}</div>
+          {% endif %}
+        {% endfor %}
+        {% if s == "Open" and loop.index0 == 0 %}
+        <div class="step-desc">{{ incident.reporter.full_name }} — {{ incident.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  <section class="sx-card">
+    <h3>Investigation Notes</h3>
+    <div class="activity-feed">
+      {% for note in incident.notes|sort(attribute="created_at", reverse=true) %}
+      <article>
+        <span>{{ note.analyst.full_name }}</span>
+        <p>{{ note.note }}</p>
+        <small>{{ note.created_at.strftime("%Y-%m-%d %H:%M") }}</small>
+      </article>
+      {% else %}
+      <p class="muted">No investigation notes yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<section class="sx-card mt-4">
+  <h3>Status History</h3>
+  <table class="table table-sx">
+    <thead><tr><th>From</th><th>To</th><th>Changed By</th><th>Reason</th><th>Time</th></tr></thead>
+    <tbody>
+    {% for log in incident.status_logs|sort(attribute="changed_at", reverse=true) %}
+    <tr><td>{{ log.old_status.value if log.old_status else "Created" }}</td><td>{{ log.new_status.value }}</td><td>{{ log.changer.full_name }}</td><td>{{ log.reason }}</td><td class="mono">{{ log.changed_at.strftime("%Y-%m-%d %H:%M") }}</td></tr>
+    {% else %}
+    <tr><td colspan="5" class="empty-row">No status changes recorded.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

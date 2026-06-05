@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-scan">
+  <div>
+    <p class="eyebrow">Threat Intelligence Center</p>
+    <h2>Monitor and track emerging cyber threat intelligence feeds.</h2>
+  </div>
+  <button class="btn btn-cyan" data-bs-toggle="modal" data-bs-target="#addThreatModal">+ Add Threat</button>
+</section>
+
+<div class="stat-grid four">
+  <article class="sx-card stat-card"><span>Total Threats</span><strong>{{ stats.total }}</strong><small>All time</small></article>
+  <article class="sx-card stat-card critical"><span>Critical</span><strong>{{ stats.critical }}</strong><small>Immediate action</small></article>
+  <article class="sx-card stat-card high"><span>High</span><strong>{{ stats.high }}</strong><small>Priority</small></article>
+  <article class="sx-card stat-card medium"><span>Medium / Low</span><strong>{{ stats.medium + stats.low }}</strong><small>Monitoring</small></article>
+</div>
+
+<section class="sx-card">
+  <div class="table-responsive">
+    <table class="table table-sx">
+      <thead><tr><th>ID</th><th>Title</th><th>Severity</th><th>Source</th><th>Created</th></tr></thead>
+      <tbody>
+      {% for threat in threats %}
+      <tr>
+        <td class="mono">{{ threat.threat_id }}</td>
+        <td>{{ threat.title }}</td>
+        <td><span class="severity {{ threat.severity.value|lower }}">{{ threat.severity.value }}</span></td>
+        <td>{{ threat.source }}</td>
+        <td class="mono">{{ threat.created_at.strftime("%Y-%m-%d") if threat.created_at else "" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty-row">No threat intelligence feeds recorded.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="modal fade" id="addThreatModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="post" class="modal-content sx-modal">
+      <div class="modal-header"><h5 class="modal-title">Add Threat Feed</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        {{ form.hidden_tag() }}
+        <label>{{ form.title.label.text }}</label>
+        {{ form.title(class="form-control sx-input") }}
+        <label>{{ form.description.label.text }}</label>
+        {{ form.description(class="form-control sx-input", rows="5") }}
+        <label>{{ form.severity.label.text }}</label>
+        {{ form.severity(class="form-select sx-input") }}
+        <label>{{ form.source.label.text }}</label>
+        {{ form.source(class="form-control sx-input") }}
+      </div>
+      <div class="modal-footer">{{ form.submit(class="btn btn-cyan") }}</div>
+    </form>
+  </div>
+</div>
+{% endblock %}

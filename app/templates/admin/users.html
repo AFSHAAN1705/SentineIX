@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="sx-card">
+  <h3>User Directory</h3>
+  <div class="table-responsive">
+    <table class="table table-sx">
+      <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Created</th><th>Last Login</th><th>Status</th><th>Control</th></tr></thead>
+      <tbody>
+      {% for user in users %}
+      <tr>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar xs">
+              {% if user.profile_picture %}
+              <img src="{{ url_for('static', filename=user.profile_picture) }}" alt="{{ user.full_name }}">
+              {% else %}
+              {{ user.initials }}
+              {% endif %}
+            </div>
+            {{ user.full_name }}
+          </div>
+        </td>
+        <td>{{ user.email }}</td>
+        <td><span class="role-badge">{{ user.role.value }}</span></td>
+        <td class="mono">{{ user.created_at.strftime("%Y-%m-%d") }}</td>
+        <td class="mono">{{ user.last_login.strftime("%Y-%m-%d %H:%M") if user.last_login else "Never" }}</td>
+        <td>{{ "Active" if user.is_active else "Inactive" }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin.toggle_user', id=user.user_id) }}">
+            {{ form.hidden_tag() }}
+            <button class="btn btn-sm {{ 'btn-alert' if user.is_active else 'btn-cyan' }}" {% if user.user_id == current_user.user_id %}disabled{% endif %}>
+              {{ "Deactivate" if user.is_active else "Activate" }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

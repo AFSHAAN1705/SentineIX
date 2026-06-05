@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="sx-card">
+  <form class="filter-bar" method="get">
+    <input class="form-control sx-input" name="q" value="{{ request.args.get('q','') }}" placeholder="Search title or ID">
+    <select class="form-select sx-input" name="status">
+      <option value="">Any status</option>
+      {% for status in ["Open","Assigned","Investigating","Under Review","Resolved","Closed"] %}
+      <option value="{{ status }}" {% if request.args.get('status') == status %}selected{% endif %}>{{ status }}</option>
+      {% endfor %}
+    </select>
+    <select class="form-select sx-input" name="severity">
+      <option value="">Any severity</option>
+      {% for severity in ["Low","Medium","High","Critical"] %}
+      <option value="{{ severity }}" {% if request.args.get('severity') == severity %}selected{% endif %}>{{ severity }}</option>
+      {% endfor %}
+    </select>
+    <select class="form-select sx-input" name="type_id">
+      <option value="">Any type</option>
+      {% for type in types %}
+      <option value="{{ type.type_id }}" {% if request.args.get('type_id') == type.type_id|string %}selected{% endif %}>{{ type.type_name }}</option>
+      {% endfor %}
+    </select>
+    <input class="form-control sx-input" type="date" name="from" value="{{ request.args.get('from','') }}">
+    <input class="form-control sx-input" type="date" name="to" value="{{ request.args.get('to','') }}">
+    <button class="btn btn-cyan">Filter</button>
+  </form>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <p class="muted">Showing {{ shown }} of {{ total }} ({{ total_all }} total)</p>
+    <form method="get">
+      {% for key in request.args %}
+        {% if key != 'sort' %}<input type="hidden" name="{{ key }}" value="{{ request.args[key] }}">{% endif %}
+      {% endfor %}
+      <select class="form-select sx-input sort-select" name="sort" onchange="this.form.submit()">
+        <option value="created_at_desc" {% if sort == 'created_at_desc' %}selected{% endif %}>Newest First</option>
+        <option value="created_at_asc" {% if sort == 'created_at_asc' %}selected{% endif %}>Oldest First</option>
+        <option value="severity_desc" {% if sort == 'severity_desc' %}selected{% endif %}>Severity (High)</option>
+        <option value="title_asc" {% if sort == 'title_asc' %}selected{% endif %}>Title A-Z</option>
+        <option value="title_desc" {% if sort == 'title_desc' %}selected{% endif %}>Title Z-A</option>
+      </select>
+    </form>
+  </div>
+</section>
+
+<section class="sx-card mt-4">
+  <div class="table-responsive">
+    <table class="table table-sx align-middle">
+      <thead><tr><th>ID</th><th>Title</th><th>Type</th><th>Severity</th><th>Status</th><th>Risk</th><th>Analyst</th><th>Assign</th></tr></thead>
+      <tbody>
+      {% for incident in incidents %}
+      <tr>
+        <td class="mono">SX-{{ "%05d"|format(incident.incident_id) }}</td>
+        <td>{{ incident.title }}</td>
+        <td>{{ incident.incident_type.type_name }}</td>
+        <td><span class="severity {{ incident.severity.value|lower }}">{{ incident.severity.value }}</span></td>
+        <td><span class="status-pill {{ incident.status.value|lower|replace(' ', '-') }}">{{ incident.status.value }}</span></td>
+        <td><span class="risk-badge {{ incident.risk_score.class }}">{{ incident.risk_score.level }}</span></td>
+        <td>{{ incident.assignment.analyst.full_name if incident.assignment else "Unassigned" }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin.assign', incident_id=incident.incident_id) }}" class="inline-form">
+            {{ form.hidden_tag() }}
+            {{ form.analyst_id(class="form-select sx-input form-select-sm") }}
+            <button class="btn btn-outline-cyan btn-sm">Apply</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="empty-row">No matching incidents.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if total_pages > 1 %}
+  <div class="pagination-sx">
+    {% if page > 1 %}
+    <a href="?page={{ page - 1 }}{% for key in request.args %}{% if key != 'page' %}&{{ key }}={{ request.args[key] }}{% endif %}{% endfor %}">‹ Prev</a>
+    {% endif %}
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}<span class="active">{{ p }}</span>{% elif p <= 3 or p > total_pages - 3 or (p >= page - 1 and p <= page + 1) %}
+      <a href="?page={{ p }}{% for key in request.args %}{% if key != 'page' %}&{{ key }}={{ request.args[key] }}{% endif %}{% endfor %}">{{ p }}</a>{% endif %}
+    {% endfor %}
+    {% if page < total_pages %}
+    <a href="?page={{ page + 1 }}{% for key in request.args %}{% if key != 'page' %}&{{ key }}={{ request.args[key] }}{% endif %}{% endfor %}">Next ›</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

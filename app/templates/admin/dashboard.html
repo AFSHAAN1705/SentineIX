@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-scan">
+  <div>
+    <p class="eyebrow">Command Console</p>
+    <h2>Operational visibility across SentinelX incident response.</h2>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-cyan" href="{{ url_for('admin.reports') }}">Open Reports</a>
+    <a class="btn btn-cyan" href="{{ url_for('admin.export_center') }}">Export Data</a>
+  </div>
+</section>
+
+{% if critical_alerts %}
+<div class="mb-3" style="display:grid;gap:8px;">
+  {% for alert in critical_alerts %}
+  <div class="critical-alert">
+    <span class="ca-icon">⚠</span>
+    <div class="ca-text">
+      <strong><a href="{{ url_for('admin.incidents') }}?status=Open&severity=Critical" style="color:var(--red);">{{ alert.title }}</a></strong>
+      <span>SX-{{ "%05d"|format(alert.incident_id) }} — {{ alert.incident_type.type_name }} — {{ alert.created_at.strftime("%Y-%m-%d") if alert.created_at else "" }}</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="stat-grid six">
+  <article class="sx-card stat-card"><span>Total</span><strong>{{ stats.total }}</strong><small>All time</small></article>
+  <article class="sx-card stat-card medium"><span>Open</span><strong>{{ stats.open }}</strong><small>Requires attention</small></article>
+  <article class="sx-card stat-card"><span>Resolved</span><strong>{{ stats.resolved }}</strong><small>Completed</small></article>
+  <article class="sx-card stat-card critical"><span>High/Critical</span><strong>{{ stats.high_critical }}</strong><small>Elevated severity</small></article>
+  <article class="sx-card stat-card high"><span>Critical Open</span><strong>{{ stats.critical_open }}</strong><small>Immediate action</small></article>
+  <article class="sx-card stat-card"><span>Threats</span><strong>{{ stats.threats }}</strong><small>Intel feeds</small></article>
+</div>
+
+<div class="chart-grid">
+  <section class="sx-card"><h3>Incidents Last 6 Months</h3><canvas id="monthlyChart"></canvas></section>
+  <section class="sx-card"><h3>Severity Distribution</h3><canvas id="severityChart"></canvas></section>
+  <section class="sx-card"><h3>Analyst Workload</h3><canvas id="workloadChart"></canvas></section>
+</div>
+
+<div class="chart-grid mt-4">
+  <section class="sx-card"><h3>Incident Types</h3><canvas id="typeChart"></canvas></section>
+  <section class="sx-card"><h3>Resolution Times</h3><canvas id="resolutionChart"></canvas></section>
+  <section class="sx-card"><h3>Analyst Performance</h3><canvas id="analystPerfChart"></canvas></section>
+</div>
+
+<section class="sx-card mt-4">
+  <div class="section-head"><h3>Recent 10 Incidents</h3><a href="{{ url_for('admin.incidents') }}">Manage incidents</a></div>
+  <div class="table-responsive">
+    <table class="table table-sx">
+      <thead><tr><th>ID</th><th>Title</th><th>Reporter</th><th>Severity</th><th>Status</th><th>Risk</th><th>Analyst</th></tr></thead>
+      <tbody>
+      {% for incident in recent %}
+      <tr>
+        <td class="mono">SX-{{ "%05d"|format(incident.incident_id) }}</td>
+        <td>{{ incident.title }}</td>
+        <td>{{ incident.reporter.full_name }}</td>
+        <td><span class="severity {{ incident.severity.value|lower }}">{{ incident.severity.value }}</span></td>
+        <td><span class="status-pill {{ incident.status.value|lower|replace(' ', '-') }}">{{ incident.status.value }}</span></td>
+        <td><span class="risk-badge {{ incident.risk_score.class }}">{{ incident.risk_score.level }}</span></td>
+        <td>{{ incident.assignment.analyst.full_name if incident.assignment else "Unassigned" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="empty-row">No incident data available.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>window.SENTINELX_CHARTS = {{ chart_data|tojson }}; renderSentinelCharts(window.SENTINELX_CHARTS);</script>
+{% endblock %}

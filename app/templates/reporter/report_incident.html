@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="sx-card incident-form" novalidate>
+  {{ form.hidden_tag() }}
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <label>{{ form.title.label.text }}</label>
+      {{ form.title(class="form-control sx-input", placeholder="Suspicious credential capture campaign") }}
+
+      <label>{{ form.type_id.label.text }}</label>
+      {{ form.type_id(class="form-select sx-input") }}
+
+      <label>Severity</label>
+      <div class="severity-grid" data-severity-grid>
+        {% for value, label, help in [
+          ("Low", "Low", "Limited scope, no confirmed compromise"),
+          ("Medium", "Medium", "Likely impact to one service or user group"),
+          ("High", "High", "Confirmed compromise or business disruption"),
+          ("Critical", "Critical", "Active breach, ransomware, or widespread outage")
+        ] %}
+        <button type="button" class="severity-card {{ value|lower }} {% if form.severity.data == value %}selected{% endif %}" data-value="{{ value }}">
+          <strong>{{ label }}</strong><span>{{ help }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      {{ form.severity(id="severityInput") }}
+      <p class="helper" id="severityHelp">Select the closest business impact level.</p>
+
+      <label>{{ form.description.label.text }}</label>
+      {{ form.description(class="form-control sx-input", rows="8", placeholder="Timeline, affected systems, indicators, users, and immediate containment actions.") }}
+    </div>
+    <div class="col-lg-4">
+      <div class="upload-zone">
+        <span>⇧</span>
+        <strong>Drop Evidence</strong>
+        <p>jpg, png, pdf, zip, log, txt, csv. Max 10MB.</p>
+        {{ form.evidence(class="form-control sx-input") }}
+      </div>
+      <div class="threat-copy">
+        <h3>Report Header</h3>
+        <p>SentinelX tags every submission as immutable incident intelligence and routes it into analyst triage.</p>
+      </div>
+      {{ form.submit(class="btn btn-cyan w-100") }}
+    </div>
+  </div>
+  {% for field in [form.title, form.type_id, form.severity, form.description, form.evidence] %}
+    {% for error in field.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  {% endfor %}
+</form>
+{% endblock %}
+

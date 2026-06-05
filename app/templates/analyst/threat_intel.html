@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-scan">
+  <div>
+    <p class="eyebrow">Threat Intelligence</p>
+    <h2>Stay informed on emerging cyber threats and indicators.</h2>
+  </div>
+</section>
+
+<div class="stat-grid three">
+  <article class="sx-card stat-card"><span>Total Threats</span><strong>{{ stats.total }}</strong><small>All time</small></article>
+  <article class="sx-card stat-card critical"><span>Critical</span><strong>{{ stats.critical }}</strong><small>Immediate action</small></article>
+  <article class="sx-card stat-card high"><span>High</span><strong>{{ stats.high }}</strong><small>Priority</small></article>
+</div>
+
+<section class="sx-card">
+  <div class="table-responsive">
+    <table class="table table-sx">
+      <thead><tr><th>ID</th><th>Title</th><th>Severity</th><th>Source</th><th>Date</th></tr></thead>
+      <tbody>
+      {% for threat in threats %}
+      <tr>
+        <td class="mono">{{ threat.threat_id }}</td>
+        <td>{{ threat.title }}</td>
+        <td><span class="severity {{ threat.severity.value|lower }}">{{ threat.severity.value }}</span></td>
+        <td>{{ threat.source }}</td>
+        <td class="mono">{{ threat.created_at.strftime("%Y-%m-%d") if threat.created_at else "" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty-row">No threat feeds available.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

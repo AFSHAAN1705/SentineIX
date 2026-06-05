@@ -1,0 +1,16 @@
+Incident Summary Report
+
+Incident:
+Ransomware Detected on Department File Server
+
+Severity:
+Critical
+
+Status:
+Investigating
+
+Analyst:
+Alex Morgan
+
+Summary:
+A ransomware attack encrypted multiple departmental files and attempted data exfiltration. Containment procedures were initiated immediately.

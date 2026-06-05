@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="sx-card">
+  <div class="section-head">
+    <h3>Audit Log Center</h3>
+    <form method="get" class="d-flex gap-2 align-items-end">
+      <select class="form-select sx-input" name="action" onchange="this.form.submit()">
+        <option value="">All Actions</option>
+        {% for action in actions %}
+        <option value="{{ action }}" {% if action_filter == action %}selected{% endif %}>{{ action }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sx">
+      <thead><tr><th>ID</th><th>User</th><th>Action</th><th>Description</th><th>Timestamp</th></tr></thead>
+      <tbody>
+      {% for log in logs %}
+      <tr>
+        <td class="mono">{{ log.log_id }}</td>
+        <td>{{ log.user.full_name if log.user else "System" }}</td>
+        <td><span class="badge-cyan">{{ log.action }}</span></td>
+        <td>{{ log.description }}</td>
+        <td class="mono">{{ log.timestamp.strftime("%Y-%m-%d %H:%M:%S") if log.timestamp else "" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="empty-row">No audit logs found.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if total_pages > 1 %}
+  <div class="pagination-sx">
+    {% if page > 1 %}<a href="?page={{ page - 1 }}{% if action_filter %}&action={{ action_filter }}{% endif %}">‹ Prev</a>{% endif %}
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}<span class="active">{{ p }}</span>{% elif p <= 3 or p > total_pages - 3 or (p >= page - 1 and p <= page + 1) %}<a href="?page={{ p }}{% if action_filter %}&action={{ action_filter }}{% endif %}">{{ p }}</a>{% endif %}
+    {% endfor %}
+    {% if page < total_pages %}<a href="?page={{ page + 1 }}{% if action_filter %}&action={{ action_filter }}{% endif %}">Next ›</a>{% endif %}
+  </div>
+  {% endif %}
+  <p class="muted mt-3">{{ total }} total log entries</p>
+</section>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero-scan">
+  <div>
+    <p class="eyebrow">Export Center</p>
+    <h2>Export SentinelX data in CSV format for external analysis.</h2>
+  </div>
+</section>
+
+<div class="chart-grid-2">
+  <section class="sx-card">
+    <h3>Incident Reports</h3>
+    <p class="muted">Export all incidents with full details including severity, status, assignments, and risk scores.</p>
+    <a class="btn btn-cyan w-100 mt-3" href="{{ url_for('admin.export_data', export_type='incidents') }}">Download CSV</a>
+  </section>
+
+  <section class="sx-card">
+    <h3>Analyst Performance</h3>
+    <p class="muted">Export analyst metrics including assigned count, resolved count, and average resolution time.</p>
+    <a class="btn btn-green w-100 mt-3" href="{{ url_for('admin.export_data', export_type='analysts') }}">Download CSV</a>
+  </section>
+
+  <section class="sx-card">
+    <h3>Monthly Trends</h3>
+    <p class="muted">Export monthly incident trends for reporting and compliance purposes.</p>
+    <a class="btn btn-outline-cyan w-100 mt-3" href="{{ url_for('admin.export_data', export_type='monthly') }}">Download CSV</a>
+  </section>
+
+  <section class="sx-card">
+    <h3>Threat Intelligence</h3>
+    <p class="muted">Export threat intelligence feeds with severity, source, and creation dates.</p>
+    <a class="btn btn-outline-cyan w-100 mt-3" href="{{ url_for('admin.export_data', export_type='threats') }}">Download CSV</a>
+  </section>
+
+  <section class="sx-card">
+    <h3>Audit Logs</h3>
+    <p class="muted">Export complete audit trail including user actions and timestamps.</p>
+    <a class="btn btn-outline-cyan w-100 mt-3" href="{{ url_for('admin.export_data', export_type='audit') }}">Download CSV</a>
+  </section>
+</div>
+{% endblock %}

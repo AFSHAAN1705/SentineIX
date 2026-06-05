@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="sx-card">
+  <div class="section-head"><h3>My Incident Reports</h3><a class="btn btn-cyan btn-sm" href="{{ url_for('reporter.report_incident') }}">New Report</a></div>
+  <div class="table-responsive">
+    <table class="table table-sx">
+      <thead><tr><th>ID</th><th>Title</th><th>Type</th><th>Severity</th><th>Status</th><th>Analyst</th><th>Updated</th></tr></thead>
+      <tbody>
+      {% for incident in incidents %}
+      <tr>
+        <td class="mono"><a href="{{ url_for('reporter.incident_detail', id=incident.incident_id) }}">SX-{{ "%05d"|format(incident.incident_id) }}</a></td>
+        <td>{{ incident.title }}</td>
+        <td>{{ incident.incident_type.type_name }}</td>
+        <td><span class="severity {{ incident.severity.value|lower }}">{{ incident.severity.value }}</span></td>
+        <td><span class="status-pill {{ incident.status.value|lower|replace(' ', '-') }}">{{ incident.status.value }}</span></td>
+        <td>{{ incident.assignment.analyst.full_name if incident.assignment else "Unassigned" }}</td>
+        <td class="mono">{{ incident.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="empty-row">No incidents found.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
+
