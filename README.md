@@ -1,4 +1,8 @@
-# SentinelX Cyber Security Platform 🛡️
+# SentinelX Cyber Security Platform 
+
+AI-powered Cyber Security Incident Response & Threat Intelligence Platform
+
+![Dashboard](screenshots/dashboard.png)🛡️
 
 Welcome to **SentinelX**, a full-stack Cyber Security Operations Center (SOC) platform I built to help manage, investigate, and resolve security incidents. It streamlines the whole incident response workflow using role-based access, real-time dashboards, and an integrated AI Analyst to automate the heavy lifting.
 
