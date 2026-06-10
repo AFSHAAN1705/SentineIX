@@ -1,6 +1,6 @@
 # SentinelX Cyber Security Platform
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](Screenshots/dashboard.png)
 
 AI-powered Cyber Security Incident Response & Threat Intelligence Platform
 
@@ -179,46 +179,46 @@ Since the database seeds itself automatically, you can use these default account
 
 ### Dashboard
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](Screenshots/dashboard.png)
 
 ---
 
 ### Analytics Page
 
-![Analytics](screenshots/analytics-page.png)
+![Analytics](Screenshots/analytics-page.png)
 
 ---
 
 ### Incidents Page
 
-![Incidents](screenshots/incidents-page.png)
+![Incidents](Screenshots/incidents-page.png)
 
 ---
 
 ### Login Page
 
-![Login](screenshots/login-page.png)
+![Login](Screenshots/login-page.png)
 
 ---
 
 ### Report Page
 
-![Report](screenshots/report-page.png)
+![Report](Screenshots/report-page.png)
 
 ---
 
 ### Reporting Page
 
-![Reporting](screenshots/reporting-page.png)
+![Reporting](Screenshots/reporting-page.png)
 
 ---
 
 ### Security Analyse Page
 
-![Security Analyse](screenshots/security-analyse-page.png)
+![Security Analyse](Screenshots/security-analyse-page.png)
 
 ---
 
 ### Threat Intelligence
 
-![Threat Intelligence](screenshots/threat-intelligence.png)
+![Threat Intelligence](Screenshots/threat-intelligence.png)
